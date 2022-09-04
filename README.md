@@ -1,6 +1,6 @@
 # WhatsApp Web Clone
 
-As the name goes this is clone of WhatsApp Web that I build for practice purpose only. 
+As the name goes this is clone of WhatsApp Web that I build for practice purpose only and by watching bunch of YouTube Videos and stuff. 
 If you click on Demo Link Then you gotta sign in with gmail. after that you will get the access to clone and you have to add the gmail of the person you want to chat if the person also logged in with that particular gmail then you can chat with him. If not then messages will only stored in like endless space. 
 - If you want to chat perfectly then both the sender and receiver have to sign in.
 
