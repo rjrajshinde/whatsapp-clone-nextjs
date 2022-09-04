@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Avatar, Button, IconButton } from "@material-ui/core";
+import { Avatar, Button, IconButton, Menu, MenuItem } from "@material-ui/core";
 import ChatOutlinedIcon from "@material-ui/icons/ChatOutlined";
 import MoreVert from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
@@ -8,6 +8,7 @@ import { auth, db } from "../firebaseCon";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "./Chat";
+import { useState } from "react";
 
 const Container = styled.div`
   background: #121b22;
@@ -25,9 +26,13 @@ const Container = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
 
-  @media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  @media screen and (max-device-width: 1024px) {
     max-width: 280px;
     min-width: 240px;
+  }
+
+  @media screen and (max-device-width: 768px) {
+    font-size: 15px;
   }
 `;
 
@@ -125,20 +130,56 @@ function Sidebar() {
 
   const signOut = () => {
     auth.signOut();
+    setMenuOpen(null);
     window.history.pushState({}, "", "/");
+  };
+
+  //* TO OPEN THE MORE MENU FOR LOGOUT
+  const [menuOpen, setMenuOpen] = useState(null);
+  const open = Boolean(menuOpen);
+  const handleMenuOpen = (event) => {
+    setMenuOpen(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setMenuOpen(null);
   };
 
   return (
     <Container>
       <Header>
-        <UAvatar src={user?.photoURL} onClick={signOut} />
+        <UAvatar src={user?.photoURL} />
         <ContainerIcons>
           <IconButton>
             <ChatOutlinedIcon style={{ color: "#AEBAC1" }} />
           </IconButton>
-          <IconButton>
+          <IconButton
+            id="iconbutton"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleMenuOpen}
+          >
             <MoreVert style={{ color: "#AEBAC1" }} />
           </IconButton>
+          <Menu
+            id="basic-menu"
+            anchorEl={menuOpen}
+            open={open}
+            onClose={handleMenuClose}
+            MenuListProps={{
+              "aria-labelledby": "iconbutton",
+            }}
+            PaperProps={{
+              style: {
+                marginTop: "50px",
+                marginLeft: "10px",
+                backgroundColor: "#2b3942",
+                color: "#fff",
+              },
+            }}
+          >
+            <MenuItem onClick={signOut}>Logout</MenuItem>
+          </Menu>
         </ContainerIcons>
       </Header>
       <Search>

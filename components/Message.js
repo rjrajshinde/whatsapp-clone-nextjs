@@ -5,6 +5,9 @@ import moment from "moment";
 
 const Container = styled.div`
   font-size: 16px;
+  @media screen and (max-device-width: 768px) {
+    font-size: 15px;
+  }
 `;
 
 const MessageEle = styled.p`
@@ -52,26 +55,26 @@ const Receiver = styled(MessageEle)`
 
 const MessageTime = styled.span`
   color: whitesmoke;
-  padding: 0.7em;
+  padding: 0.3em 0.7em;
   position: relative;
-  bottom: -0.8em;
+  bottom: -0.5em;
   text-align: right;
   right: -8px;
-  font-size: 8px;
+  font-size: 12px;
 `;
 
 function Message({ user, message }) {
   const [userLoggedIn] = useAuthState(auth);
-
-  console.log("message", message);
+  var time = message.timestamp;
   const UserMessageType = user === userLoggedIn.email ? Sender : Receiver;
+
   return (
     <Container>
       <UserMessageType>
         {message.message}
         <MessageTime>
           {/* {moment(message.timestamp).format("LT")} */}
-          {message.timestamp ? moment(message?.timestamp).format("LT") : "..."}
+          {message.timestamp ? moment(message.timestamp).format("LT") : ""}
           {/* {moment(1653402719559).format("LT")} */}
         </MessageTime>
       </UserMessageType>

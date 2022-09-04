@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebaseCon";
@@ -8,9 +8,13 @@ import getRecipientEmail from "../utilities/getRecipientEmail";
 import { AttachFile, Mic, MoreVert, Search } from "@material-ui/icons";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Message from "./Message";
-import { InsertEmoticon } from "@material-ui/icons";
 import firebase from "firebase/compat/app";
 import TimeAgo from "timeago-react";
+import InputEmoji from "react-input-emoji";
+import { useEffect } from "react";
+
+// import data from "@emoji-mart/data";
+// import Picker from "@emoji-mart/react";
 
 const Container = styled.div`
   background: center / contain repeat rgba(0, 0, 0, 0.33)
@@ -35,6 +39,10 @@ const HeaderInfo = styled.div`
   margin-left: 20px;
   flex: 1;
   font-size: 16px;
+  @media screen and (max-device-width: 768px) {
+    font-size: 15px;
+  }
+
   > h3 {
     margin-bottom: -8px;
     font-size: 1.05em;
@@ -52,7 +60,9 @@ const MessageContainer = styled.div`
 
 const HeaderIcons = styled.div``;
 
-const EndOFMessageContainer = styled.div``;
+const EndOFMessageContainer = styled.div`
+  margin-bottom: 30px;
+`;
 
 const InputContainer = styled.form`
   display: flex;
@@ -84,8 +94,13 @@ function ChatScreen({ chat, messages }) {
   const router = useRouter();
   const [user] = useAuthState(auth);
   const [input, setInput] = useState("");
+  const endOfMessageRef = useRef(null);
 
   const { id } = router.query;
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
 
   //* IT GOES INTO THE CHATS COLLECTION AND THE CHATS DOC WITH THE SPECIFIC ID THAT WE GET FROM ROUTER.QUERY AS SHOWN ABOVE AND AFTER GOES TO THE MESSAGES COLLECTION AND FETCHES THE DATA IN TIMESTAMP ORDER
 
@@ -97,6 +112,13 @@ function ChatScreen({ chat, messages }) {
       .collection("messages")
       .orderBy("timestamp", "asc")
   );
+
+  const scrollToBottom = () => {
+    endOfMessageRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   const showMessages = () => {
     if (messagesSnapshot) {
@@ -119,8 +141,9 @@ function ChatScreen({ chat, messages }) {
     }
   };
 
-  const sendMessage = (e) => {
-    e.preventDefault();
+  const sendMessage = () => {
+    // e
+    // e.preventDefault();
 
     //* WHEN THE USER SEND THE MESSAGE IT WILL UPDATE THE LAST SEEN TO RECENTLY ACTIVITY
     db.collection("users")
@@ -130,7 +153,7 @@ function ChatScreen({ chat, messages }) {
         { merge: true }
       );
 
-    //* AND HERE WE ARE ADDING MESSAGES THAT WE GET FROM THE INPUT FIELD WITH TIME AND PHOTOURL WITH EMAILS
+    //* AND HERE WE ARE ADDING MESSAGES THAT WE GET FROM THE INPUT FIELD WITH TIME, PHOTOURL WITH EMAILS
     db.collection("chats").doc(router.query.id).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       message: input,
@@ -139,6 +162,7 @@ function ChatScreen({ chat, messages }) {
     });
 
     setInput("");
+    scrollToBottom();
   };
 
   //? TO GET THE EMAIL OF USER THAT WE ARE CHATTING WITH
@@ -149,9 +173,9 @@ function ChatScreen({ chat, messages }) {
   );
 
   const recipientInfo = recipientSnapshot?.docs?.[0]?.data();
-
-  console.log("blahblah", firebase.firestore);
-
+  function handleOnEnter(text) {
+    console.log("enter", text);
+  }
   return (
     <Container>
       <Header>
@@ -173,7 +197,7 @@ function ChatScreen({ chat, messages }) {
               )}
             </p>
           ) : (
-            <p>Loading Last Active...</p>
+            <p>Unavailable...</p>
           )}
         </HeaderInfo>
         <HeaderIcons>
@@ -187,23 +211,34 @@ function ChatScreen({ chat, messages }) {
       </Header>
       <MessageContainer>
         {showMessages()}
-        <EndOFMessageContainer />
+        <EndOFMessageContainer ref={endOfMessageRef} />
       </MessageContainer>
       <InputContainer>
-        <IconButton>
+        {/* <IconButton>
           <InsertEmoticon style={{ color: "#AEBAC1" }} />
-        </IconButton>
+        </IconButton> */}
+
+        {/* <MessageInput
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onEnter={sendMessage}
+        /> */}
+        <InputEmoji
+          value={input}
+          onChange={setInput}
+          cleanOnEnter
+          onEnter={sendMessage}
+          placeholder="Type your message"
+          borderRadius={15}
+          borderColor="#2b3942"
+        />
+        {/* FOR MESSAGE INPUT */}
+        {/* <button hidden disabled={!input} type="submit" onClick={sendMessage}>
+          Send
+        </button> */}
         <IconButton>
           <AttachFile style={{ color: "#AEBAC1" }} />
         </IconButton>
-        <MessageInput
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        {/* FOR MESSAGE INPUT */}
-        <button hidden disabled={!input} type="submit" onClick={sendMessage}>
-          Send
-        </button>
         <IconButton>
           <Mic style={{ color: "#AEBAC1" }} />
         </IconButton>

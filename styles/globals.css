@@ -14,3 +14,27 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* FOR CHANGING THE BACKGROUND COLOR OF THE INPUT  */
+.react-input-emoji--wrapper {
+  background-color: #2b3942;
+  color: #fff;
+  border-radius: 15px;
+}
+
+/* FOR THE DISTANCE BETWEEN INPUT AND SMILEY */
+.react-emoji {
+  gap: 15px;
+}
+
+.react-input-emoji--container {
+  background-color: #2b3942 !important;
+}
+
+/* MARGIN FROM TOP FOR SMILEY */
+.react-input-emoji--button,
+.react-input-emoji--button--icon {
+  margin-top: 5px;
+  fill: #fff;
+  /* #aebac1 */
+}
