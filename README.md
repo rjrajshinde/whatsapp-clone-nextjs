@@ -1,4 +1,4 @@
-# Blog App
+# WhatsApp Web Clone
 
 It is Simple Blog app that allow you to create your blog, edit or delete your created blog
 
